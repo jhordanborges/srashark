@@ -181,10 +181,10 @@ export default function FinanceiroClient({ initialPayments, activePatients }: { 
       </div>
 
       <Tabs defaultValue="resumo" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="resumo">Resumo e Métricas</TabsTrigger>
-          <TabsTrigger value="cobrancas">Lista de Cobranças</TabsTrigger>
-          <TabsTrigger value="fluxo">Fluxo de Caixa</TabsTrigger>
+        <TabsList className="flex w-full overflow-x-auto h-14 p-1.5 bg-muted rounded-lg no-scrollbar">
+          <TabsTrigger value="resumo" className="flex-1 whitespace-nowrap text-base h-full">Resumo e Métricas</TabsTrigger>
+          <TabsTrigger value="cobrancas" className="flex-1 whitespace-nowrap text-base h-full">Lista de Cobranças</TabsTrigger>
+          <TabsTrigger value="fluxo" className="flex-1 whitespace-nowrap text-base h-full">Fluxo de Caixa</TabsTrigger>
         </TabsList>
         
         <TabsContent value="resumo" className="space-y-4">

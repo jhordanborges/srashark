@@ -45,7 +45,7 @@ const formSchema = z.object({
   cadencia_dias_intervalo: z.coerce.number().optional(),
   dia_semana: z.string().optional(),
   horario: z.string().optional(),
-  valor: z.coerce.number().min(0.01, 'Valor deve ser maior que zero'),
+  valor: z.coerce.number().min(0).default(0),
   forma_pagamento: z.string(),
   data_pagamento: z.string().optional(),
   status_financeiro: z.string(),
@@ -163,6 +163,13 @@ export default function PacienteFormModal({
         toast.success('Paciente atualizada com sucesso!')
         dispatchInternalWebhook('patient.updated', { patient: { id: patient.id, ...values } })
       } else {
+        // Validate valor before inserting
+        if (!values.valor || values.valor <= 0) {
+          toast.warning('Preencha o valor do pacote na aba Financeiro antes de salvar.')
+          setActiveTab('financeiro')
+          setIsLoading(false)
+          return
+        }
         const { data: newPatient, error: patientError } = await supabase
           .from('patients')
           .insert({

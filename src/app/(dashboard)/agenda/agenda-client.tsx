@@ -9,7 +9,8 @@ import { createClient } from '@/lib/supabase/client'
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core'
 import SessionCard from '@/components/agenda/session-card'
 import DroppableCell from '@/components/agenda/droppable-cell'
-import { Loader2 } from 'lucide-react'
+import { Loader2, RefreshCw } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function AgendaClient({ initialSessions }: { initialSessions: any[] }) {
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -20,24 +21,37 @@ export default function AgendaClient({ initialSessions }: { initialSessions: any
   const startWeek = startOfWeek(currentDate, { weekStartsOn: 1 })
   const endWeek = endOfWeek(currentDate, { weekStartsOn: 1 })
 
-  useEffect(() => {
-    const syncWeek = async () => {
-      setIsSyncing(true)
+  const fetchSessions = async (start: Date, end: Date) => {
+    const { data, error } = await supabase
+      .from('sessions')
+      .select(`*, patient:patients(*)`)
+      .gte('data', format(start, 'yyyy-MM-dd'))
+      .lte('data', format(end, 'yyyy-MM-dd'))
+      .order('horario', { ascending: true })
+    if (error) console.error('Erro ao buscar sessões:', error)
+    if (data) setSessions(data)
+  }
+
+  const syncAndLoad = async (start: Date, end: Date, showToast = false) => {
+    setIsSyncing(true)
+    try {
       await fetch('/api/agenda/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startDate: format(startWeek, 'yyyy-MM-dd') })
+        body: JSON.stringify({ startDate: format(start, 'yyyy-MM-dd') })
       })
-      const { data } = await supabase
-        .from('sessions')
-        .select(`*, patient:patients(*)`)
-        .gte('data', format(startWeek, 'yyyy-MM-dd'))
-        .lte('data', format(endWeek, 'yyyy-MM-dd'))
-      
-      if (data) setSessions(data)
+      await fetchSessions(start, end)
+      if (showToast) toast.success('Agenda sincronizada com sucesso!')
+    } catch (err) {
+      console.error('Erro no sync:', err)
+      if (showToast) toast.error('Erro ao sincronizar agenda.')
+    } finally {
       setIsSyncing(false)
     }
-    syncWeek()
+  }
+
+  useEffect(() => {
+    syncAndLoad(startWeek, endWeek)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDate])
 
@@ -63,7 +77,7 @@ export default function AgendaClient({ initialSessions }: { initialSessions: any
   }
 
   const hours = Array.from({ length: 15 }, (_, i) => `${(i + 8).toString().padStart(2, '0')}:00`)
-  const days = Array.from({ length: 5 }, (_, i) => addDays(startWeek, i))
+  const days = Array.from({ length: 6 }, (_, i) => addDays(startWeek, i))
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)]">
@@ -73,17 +87,25 @@ export default function AgendaClient({ initialSessions }: { initialSessions: any
           <Button variant="outline" onClick={() => setCurrentDate(subWeeks(currentDate, 1))}>Anterior</Button>
           <Button variant="outline" onClick={() => setCurrentDate(new Date())}>Hoje</Button>
           <Button variant="outline" onClick={() => setCurrentDate(addWeeks(currentDate, 1))}>Próxima</Button>
+          <Button
+            variant="outline"
+            onClick={() => syncAndLoad(startWeek, endWeek, true)}
+            disabled={isSyncing}
+            title="Sincronizar sessões das pacientes ativas"
+          >
+            {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          </Button>
         </div>
       </div>
       <p className="text-muted-foreground mb-4">
         Semana de {format(startWeek, 'dd/MM')} a {format(endWeek, 'dd/MM')}
-        {isSyncing && <Loader2 className="inline ml-2 h-4 w-4 animate-spin" />}
+        {isSyncing && <span className="ml-2 text-sm text-primary animate-pulse">Sincronizando...</span>}
       </p>
 
       <div className="flex-1 flex gap-4 overflow-hidden">
         <div className="flex-1 overflow-auto border rounded-md bg-card relative">
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr] min-w-[800px]">
+            <div className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr_1fr] min-w-[900px]">
               <div className="sticky top-0 bg-muted p-2 border-b border-r z-20">Hora</div>
               {days.map(day => (
                 <div key={day.toISOString()} className="sticky top-0 bg-muted p-2 border-b border-r text-center font-semibold z-20">

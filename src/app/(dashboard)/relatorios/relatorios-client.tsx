@@ -188,10 +188,10 @@ export default function RelatoriosClient() {
       </div>
 
       <Tabs defaultValue="mensal" className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="mensal">Relatório Mensal</TabsTrigger>
-          <TabsTrigger value="pacientes">Saúde dos Pacientes</TabsTrigger>
-          <TabsTrigger value="graficos">Gráficos Consolidados</TabsTrigger>
+        <TabsList className="flex w-full overflow-x-auto h-14 p-1.5 bg-muted rounded-lg no-scrollbar mb-4">
+          <TabsTrigger value="mensal" className="flex-1 whitespace-nowrap text-base h-full">Relatório Mensal</TabsTrigger>
+          <TabsTrigger value="pacientes" className="flex-1 whitespace-nowrap text-base h-full">Saúde dos Pacientes</TabsTrigger>
+          <TabsTrigger value="graficos" className="flex-1 whitespace-nowrap text-base h-full">Gráficos Consolidados</TabsTrigger>
         </TabsList>
 
         <TabsContent value="mensal" className="space-y-6">
