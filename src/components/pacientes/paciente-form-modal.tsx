@@ -1,7 +1,7 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -56,15 +56,18 @@ const formSchema = z.object({
 export default function PacienteFormModal({ 
   isOpen, 
   onClose,
-  onSuccess
+  onSuccess,
+  patient
 }: { 
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
+  patient?: any
 }) {
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('dados')
   const supabase = createClient()
+  const isEditMode = !!patient
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema) as any,
@@ -88,46 +91,116 @@ export default function PacienteFormModal({
     },
   })
 
+  useEffect(() => {
+    if (isOpen) {
+      if (patient) {
+        form.reset({
+          nome: patient.nome || '',
+          telefone: patient.telefone || '',
+          email: patient.email || '',
+          observacoes: patient.observacoes || '',
+          sessoes_contratadas: patient.sessoes_contratadas ?? 4,
+          sessoes_realizadas: patient.sessoes_realizadas ?? 0,
+          cadencia: patient.cadencia || 'semanal',
+          cadencia_dias_intervalo: patient.cadencia_dias_intervalo ?? 7,
+          dia_semana: patient.dia_semana || 'segunda',
+          horario: patient.horario || '09:00',
+          valor: 1, // dummy value to satisfy form validation in edit mode
+          forma_pagamento: 'pix',
+          data_pagamento: new Date().toISOString().split('T')[0],
+          status_financeiro: 'pago',
+          status: patient.status || 'ativa',
+          motivo_pausa: patient.motivo_pausa || '',
+        })
+      } else {
+        form.reset({
+          nome: '',
+          telefone: '',
+          email: '',
+          observacoes: '',
+          sessoes_contratadas: 4,
+          sessoes_realizadas: 0,
+          cadencia: 'semanal',
+          cadencia_dias_intervalo: 7,
+          dia_semana: 'segunda',
+          horario: '09:00',
+          valor: 0,
+          forma_pagamento: 'pix',
+          data_pagamento: new Date().toISOString().split('T')[0],
+          status_financeiro: 'pago',
+          status: 'ativa',
+          motivo_pausa: '',
+        })
+      }
+      setActiveTab('dados')
+    }
+  }, [isOpen, patient, form])
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
     try {
-      const { data: patient, error: patientError } = await supabase
-        .from('patients')
-        .insert({
-          nome: values.nome,
-          telefone: values.telefone,
-          email: values.email || null,
-          observacoes: values.observacoes,
-          cadencia: values.cadencia,
-          cadencia_dias_intervalo: values.cadencia === 'personalizado' ? values.cadencia_dias_intervalo : 7,
-          dia_semana: values.dia_semana,
-          horario: values.horario,
-          sessoes_contratadas: values.sessoes_contratadas,
-          sessoes_realizadas: values.sessoes_realizadas,
-          status: values.status,
-          motivo_pausa: values.status === 'pausada' ? values.motivo_pausa : null,
-        })
-        .select()
-        .single()
+      if (isEditMode) {
+        const { error: patientError } = await supabase
+          .from('patients')
+          .update({
+            nome: values.nome,
+            telefone: values.telefone,
+            email: values.email || null,
+            observacoes: values.observacoes,
+            cadencia: values.cadencia,
+            cadencia_dias_intervalo: values.cadencia === 'personalizado' ? values.cadencia_dias_intervalo : 7,
+            dia_semana: values.dia_semana,
+            horario: values.horario,
+            sessoes_contratadas: values.sessoes_contratadas,
+            sessoes_realizadas: values.sessoes_realizadas,
+            status: values.status,
+            motivo_pausa: values.status === 'pausada' ? values.motivo_pausa : null,
+          })
+          .eq('id', patient.id)
 
-      if (patientError) throw patientError
+        if (patientError) throw patientError
 
-      const { error: paymentError } = await supabase
-        .from('payments')
-        .insert({
-          patient_id: patient.id,
-          valor: values.valor,
-          forma_pagamento: values.forma_pagamento,
-          data_pagamento: values.data_pagamento || null,
-          status: values.status_financeiro,
-          numero_sessoes_pacote: values.sessoes_contratadas,
-        })
+        toast.success('Paciente atualizada com sucesso!')
+        dispatchInternalWebhook('patient.updated', { patient: { id: patient.id, ...values } })
+      } else {
+        const { data: newPatient, error: patientError } = await supabase
+          .from('patients')
+          .insert({
+            nome: values.nome,
+            telefone: values.telefone,
+            email: values.email || null,
+            observacoes: values.observacoes,
+            cadencia: values.cadencia,
+            cadencia_dias_intervalo: values.cadencia === 'personalizado' ? values.cadencia_dias_intervalo : 7,
+            dia_semana: values.dia_semana,
+            horario: values.horario,
+            sessoes_contratadas: values.sessoes_contratadas,
+            sessoes_realizadas: values.sessoes_realizadas,
+            status: values.status,
+            motivo_pausa: values.status === 'pausada' ? values.motivo_pausa : null,
+          })
+          .select()
+          .single()
 
-      if (paymentError) throw paymentError
+        if (patientError) throw patientError
 
-      toast.success('Paciente cadastrada com sucesso!')
+        const { error: paymentError } = await supabase
+          .from('payments')
+          .insert({
+            patient_id: newPatient.id,
+            valor: values.valor,
+            forma_pagamento: values.forma_pagamento,
+            data_pagamento: values.data_pagamento || null,
+            status: values.status_financeiro,
+            numero_sessoes_pacote: values.sessoes_contratadas,
+          })
+
+        if (paymentError) throw paymentError
+
+        toast.success('Paciente cadastrada com sucesso!')
+        dispatchInternalWebhook('patient.created', { patient: newPatient })
+      }
       
-      dispatchInternalWebhook('patient.created', { patient: patient })
       if (onSuccess) onSuccess()
       form.reset()
       onClose()
@@ -144,9 +217,13 @@ export default function PacienteFormModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl max-h-[90vh] min-h-[75vh] overflow-y-auto p-6 sm:p-10 flex flex-col">
         <DialogHeader className="mb-4">
-          <DialogTitle className="text-2xl">Nova Paciente</DialogTitle>
+          <DialogTitle className="text-2xl">
+            {isEditMode ? `Editar Paciente: ${patient?.nome}` : 'Nova Paciente'}
+          </DialogTitle>
           <DialogDescription className="text-base">
-            Preencha os dados abaixo para cadastrar uma nova paciente.
+            {isEditMode 
+              ? 'Edite os dados abaixo para atualizar a paciente.' 
+              : 'Preencha os dados abaixo para cadastrar uma nova paciente.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -156,18 +233,11 @@ export default function PacienteFormModal({
               <TabsList className="flex w-full overflow-x-auto h-14 p-1.5 mb-8 bg-muted rounded-lg no-scrollbar">
                 <TabsTrigger className="flex-1 whitespace-nowrap text-base h-full" value="dados">Dados</TabsTrigger>
                 <TabsTrigger className="flex-1 whitespace-nowrap text-base h-full" value="sessoes">Sessões</TabsTrigger>
-                <TabsTrigger className="flex-1 whitespace-nowrap text-base h-full" value="financeiro">Financeiro</TabsTrigger>
+                {!isEditMode && <TabsTrigger className="flex-1 whitespace-nowrap text-base h-full" value="financeiro">Financeiro</TabsTrigger>}
                 <TabsTrigger className="flex-1 whitespace-nowrap text-base h-full" value="status">Status</TabsTrigger>
               </TabsList>
               
-              <div className="flex flex-col lg:flex-row gap-10 flex-1">
-                {/* Coluna da Imagem */}
-                <div className="w-full lg:w-[320px] shrink-0">
-                  <div className="w-full h-[200px] lg:h-auto lg:aspect-square bg-muted/50 rounded-2xl flex items-center justify-center border border-muted-foreground/10 shadow-sm">
-                    <span className="text-muted-foreground/50 text-base">Sem foto</span>
-                  </div>
-                </div>
-
+              <div className="flex-1">
                 {/* Coluna do Formulário */}
                 <div className="flex-1 min-w-0 flex flex-col">
                   <TabsContent value="dados" className="mt-0 space-y-6 flex-1">
@@ -349,7 +419,7 @@ export default function PacienteFormModal({
                     </div>
                     <div className="flex justify-between pt-6 mt-auto">
                       <Button type="button" variant="outline" size="lg" className="px-8 text-base" onClick={() => setActiveTab('dados')}>Anterior</Button>
-                      <Button type="button" size="lg" className="px-8 text-base" onClick={() => setActiveTab('financeiro')}>Próximo</Button>
+                      <Button type="button" size="lg" className="px-8 text-base" onClick={() => setActiveTab(isEditMode ? 'status' : 'financeiro')}>Próximo</Button>
                     </div>
                   </TabsContent>
 
@@ -484,7 +554,7 @@ export default function PacienteFormModal({
                       )}
                     </div>
                     <div className="flex justify-between pt-6 mt-auto border-t">
-                      <Button type="button" variant="outline" size="lg" className="px-8 text-base" onClick={() => setActiveTab('financeiro')}>Anterior</Button>
+                      <Button type="button" variant="outline" size="lg" className="px-8 text-base" onClick={() => setActiveTab(isEditMode ? 'sessoes' : 'financeiro')}>Anterior</Button>
                       <Button type="submit" size="lg" className="px-8 text-base" disabled={isLoading}>
                         {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
                         Salvar Paciente

@@ -25,6 +25,9 @@ import { Badge } from '@/components/ui/badge'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import PacienteFormModal from '@/components/pacientes/paciente-form-modal'
+import NovaSessaoModal from '@/components/agenda/nova-sessao-modal'
+import PagamentoModal from '@/components/pacientes/pagamento-modal'
 
 const NAV_ITEMS = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -47,6 +50,10 @@ export default function DashboardLayout({
   const supabase = createClient()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [alerts, setAlerts] = useState<any[]>([])
+  
+  const [isPacienteModalOpen, setIsPacienteModalOpen] = useState(false)
+  const [isSessaoModalOpen, setIsSessaoOpen] = useState(false)
+  const [isPagamentoModalOpen, setIsPagamentoModalOpen] = useState(false)
   
   const fetchAlerts = async () => {
     const { data } = await supabase
@@ -157,13 +164,13 @@ export default function DashboardLayout({
 
             <div className="flex items-center gap-2 md:gap-4">
               <div className="hidden md:flex gap-2">
-                <Button size="sm" variant="outline" className="gap-1">
+                <Button size="sm" variant="outline" className="gap-1" onClick={() => setIsPacienteModalOpen(true)}>
                   <Plus className="h-4 w-4" /> Nova paciente
                 </Button>
-                <Button size="sm" variant="outline" className="gap-1">
+                <Button size="sm" variant="outline" className="gap-1" onClick={() => setIsSessaoOpen(true)}>
                   <Plus className="h-4 w-4" /> Nova sessão
                 </Button>
-                <Button size="sm" variant="outline" className="gap-1">
+                <Button size="sm" variant="outline" className="gap-1" onClick={() => setIsPagamentoModalOpen(true)}>
                   <Plus className="h-4 w-4" /> Novo pagamento
                 </Button>
               </div>
@@ -258,6 +265,24 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
+
+      <PacienteFormModal 
+        isOpen={isPacienteModalOpen} 
+        onClose={() => setIsPacienteModalOpen(false)} 
+        onSuccess={() => router.refresh()} 
+      />
+
+      <NovaSessaoModal 
+        isOpen={isSessaoModalOpen} 
+        onClose={() => setIsSessaoOpen(false)} 
+        onSuccess={() => router.refresh()} 
+      />
+
+      <PagamentoModal 
+        isOpen={isPagamentoModalOpen} 
+        onClose={() => setIsPagamentoModalOpen(false)} 
+        onSuccess={() => router.refresh()} 
+      />
     </div>
   )
 }

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState } from 'react'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, Edit, Calendar, DollarSign } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -23,6 +23,8 @@ import {
 } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
 import PacienteFormModal from '@/components/pacientes/paciente-form-modal'
+import NovaSessaoModal from '@/components/agenda/nova-sessao-modal'
+import PagamentoModal from '@/components/pacientes/pagamento-modal'
 
 export default function PacientesClient({ initialData }: { initialData: any[] }) {
   const router = useRouter()
@@ -30,6 +32,10 @@ export default function PacientesClient({ initialData }: { initialData: any[] })
   const [statusFilter, setStatusFilter] = useState('todas')
   const [diaFilter, setDiaFilter] = useState('todos')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isSessaoModalOpen, setIsSessaoModalOpen] = useState(false)
+  const [isPagamentoModalOpen, setIsPagamentoModalOpen] = useState(false)
+  const [selectedPatient, setSelectedPatient] = useState<any>(null)
 
   const filteredData = initialData.filter((p) => {
     const matchName = p.nome.toLowerCase().includes(search.toLowerCase())
@@ -99,6 +105,7 @@ export default function PacientesClient({ initialData }: { initialData: any[] })
               <TableHead>Cadência</TableHead>
               <TableHead>Sessões (Real./Contr.)</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -126,6 +133,46 @@ export default function PacientesClient({ initialData }: { initialData: any[] })
                       {paciente.status}
                     </Badge>
                   </TableCell>
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        title="Editar"
+                        onClick={() => {
+                          setSelectedPatient(paciente)
+                          setIsEditModalOpen(true)
+                        }}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        title="Registrar Sessão"
+                        onClick={() => {
+                          setSelectedPatient(paciente)
+                          setIsSessaoModalOpen(true)
+                        }}
+                      >
+                        <Calendar className="h-4 w-4 text-blue-600" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        title="Registrar Pagamento"
+                        onClick={() => {
+                          setSelectedPatient(paciente)
+                          setIsPagamentoModalOpen(true)
+                        }}
+                      >
+                        <DollarSign className="h-4 w-4 text-green-600" />
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))
             )}
@@ -137,6 +184,36 @@ export default function PacientesClient({ initialData }: { initialData: any[] })
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onSuccess={() => router.refresh()} 
+      />
+
+      <PacienteFormModal 
+        isOpen={isEditModalOpen} 
+        onClose={() => {
+          setIsEditModalOpen(false)
+          setSelectedPatient(null)
+        }} 
+        onSuccess={() => router.refresh()} 
+        patient={selectedPatient}
+      />
+
+      <NovaSessaoModal 
+        isOpen={isSessaoModalOpen} 
+        onClose={() => {
+          setIsSessaoModalOpen(false)
+          setSelectedPatient(null)
+        }} 
+        onSuccess={() => router.refresh()} 
+        preselectedPatientId={selectedPatient?.id} 
+      />
+
+      <PagamentoModal 
+        isOpen={isPagamentoModalOpen}
+        onClose={() => {
+          setIsPagamentoModalOpen(false)
+          setSelectedPatient(null)
+        }} 
+        onSuccess={() => router.refresh()} 
+        patientId={selectedPatient?.id} 
       />
     </>
   )

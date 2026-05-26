@@ -9,11 +9,21 @@ import { isWithinInterval, startOfWeek, endOfWeek, startOfMonth, endOfMonth, add
 import { ptBR } from 'date-fns/locale'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import RemarcacaoModal from '@/components/agenda/remarcacao-modal'
 
 export default function DashboardClient({ patientsCount, sessions, alerts: initialAlerts, payments }: { patientsCount: number, sessions: any[], alerts: any[], payments: any[] }) {
   const supabase = createClient()
   const [localSessions, setLocalSessions] = useState(sessions)
   const [localAlerts, setLocalAlerts] = useState(initialAlerts)
+  const [selectedSession, setSelectedSession] = useState<any>(null)
+  const [isRemarcacaoOpen, setIsRemarcacaoOpen] = useState(false)
+
+  const refreshSessions = async () => {
+    const { data: sData } = await supabase
+      .from('sessions')
+      .select('*, patients(nome)')
+    if (sData) setLocalSessions(sData)
+  }
 
   // Datas Base
   const hoje = new Date()
@@ -173,15 +183,31 @@ export default function DashboardClient({ patientsCount, sessions, alerts: initi
                             <span className="font-medium text-sm">{sess.patients?.nome || 'Desconhecido'}</span>
                             <span className="text-xs text-muted-foreground">{sess.horario?.substring(0,5)} • {sess.status}</span>
                           </div>
-                          {sess.status !== 'realizada' ? (
-                            <Button size="icon" variant="outline" onClick={() => markSessionRealizada(sess)} title="Marcar como Realizada">
-                              <Check className="h-4 w-4 text-green-600" />
-                            </Button>
-                          ) : (
-                            <Button size="icon" variant="ghost" onClick={() => unmarkSessionRealizada(sess)} title="Desmarcar e devolver ao pacote" className="mr-1">
-                              <CheckCircle className="h-5 w-5 text-green-600" />
-                            </Button>
-                          )}
+                          <div className="flex items-center gap-1">
+                            {sess.status !== 'realizada' && (
+                              <Button 
+                                size="icon" 
+                                variant="outline" 
+                                onClick={() => {
+                                  setSelectedSession(sess)
+                                  setIsRemarcacaoOpen(true)
+                                }} 
+                                title="Reagendar Sessão"
+                                className="h-8 w-8"
+                              >
+                                <Clock className="h-4 w-4 text-orange-600" />
+                              </Button>
+                            )}
+                            {sess.status !== 'realizada' ? (
+                              <Button size="icon" variant="outline" onClick={() => markSessionRealizada(sess)} title="Marcar como Realizada" className="h-8 w-8">
+                                <Check className="h-4 w-4 text-green-600" />
+                              </Button>
+                            ) : (
+                              <Button size="icon" variant="ghost" onClick={() => unmarkSessionRealizada(sess)} title="Desmarcar e devolver ao pacote" className="h-8 w-8 mr-1">
+                                <CheckCircle className="h-5 w-5 text-green-600" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -222,6 +248,15 @@ export default function DashboardClient({ patientsCount, sessions, alerts: initi
           </CardContent>
         </Card>
       </div>
+      <RemarcacaoModal 
+        isOpen={isRemarcacaoOpen} 
+        onClose={() => {
+          setIsRemarcacaoOpen(false)
+          setSelectedSession(null)
+        }} 
+        onSuccess={refreshSessions} 
+        session={selectedSession} 
+      />
     </div>
   )
 }

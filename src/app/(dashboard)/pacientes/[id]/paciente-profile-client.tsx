@@ -22,6 +22,7 @@ import NovaSessaoModal from '@/components/agenda/nova-sessao-modal'
 import RemarcacaoModal from '@/components/agenda/remarcacao-modal'
 import RenovacaoModal from '@/components/pacientes/renovacao-modal'
 import PagamentoModal from '@/components/pacientes/pagamento-modal'
+import PacienteFormModal from '@/components/pacientes/paciente-form-modal'
 import { CheckCircle } from 'lucide-react'
 
 export default function PacienteProfileClient({ patient, sessions, payments }: any) {
@@ -35,6 +36,7 @@ export default function PacienteProfileClient({ patient, sessions, payments }: a
   const [isRemarcacaoOpen, setIsRemarcacaoOpen] = useState(false)
   const [isRenovacaoOpen, setIsRenovacaoOpen] = useState(false)
   const [isPagamentoOpen, setIsPagamentoOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
   const [selectedSession, setSelectedSession] = useState<any>(null)
 
   const getStatusColor = (status: string) => {
@@ -154,7 +156,7 @@ export default function PacienteProfileClient({ patient, sessions, payments }: a
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline"><Edit className="mr-2 h-4 w-4" /> Editar</Button>
+          <Button variant="outline" onClick={() => setIsEditOpen(true)}><Edit className="mr-2 h-4 w-4" /> Editar</Button>
           <Button variant="secondary" onClick={() => setIsNovaSessaoOpen(true)}><Calendar className="mr-2 h-4 w-4" /> Nova Sessão</Button>
           <Button onClick={() => setIsRenovacaoOpen(true)}><DollarSign className="mr-2 h-4 w-4" /> Renovar Pacote</Button>
         </div>
@@ -330,6 +332,13 @@ export default function PacienteProfileClient({ patient, sessions, payments }: a
         onClose={() => setIsPagamentoOpen(false)}
         onSuccess={refreshData}
         patientId={patientData.id}
+      />
+
+      <PacienteFormModal
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        onSuccess={refreshData}
+        patient={patientData}
       />
     </div>
   )
