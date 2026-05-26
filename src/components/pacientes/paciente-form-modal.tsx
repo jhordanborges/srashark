@@ -142,60 +142,60 @@ export default function PacienteFormModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-3xl md:max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>Nova Paciente</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl max-h-[90vh] min-h-[75vh] overflow-y-auto p-6 sm:p-10 flex flex-col">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-2xl">Nova Paciente</DialogTitle>
+          <DialogDescription className="text-base">
             Preencha os dados abaixo para cadastrar uma nova paciente.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full min-w-0">
-              <TabsList className="flex w-full overflow-x-auto h-auto p-1 mb-4 bg-muted rounded-md no-scrollbar">
-                <TabsTrigger className="flex-1 whitespace-nowrap" value="dados">Dados</TabsTrigger>
-                <TabsTrigger className="flex-1 whitespace-nowrap" value="sessoes">Sessões</TabsTrigger>
-                <TabsTrigger className="flex-1 whitespace-nowrap" value="financeiro">Financeiro</TabsTrigger>
-                <TabsTrigger className="flex-1 whitespace-nowrap" value="status">Status</TabsTrigger>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex-1 flex flex-col">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full min-w-0 flex-1 flex flex-col">
+              <TabsList className="flex w-full overflow-x-auto h-14 p-1.5 mb-8 bg-muted rounded-lg no-scrollbar">
+                <TabsTrigger className="flex-1 whitespace-nowrap text-base h-full" value="dados">Dados</TabsTrigger>
+                <TabsTrigger className="flex-1 whitespace-nowrap text-base h-full" value="sessoes">Sessões</TabsTrigger>
+                <TabsTrigger className="flex-1 whitespace-nowrap text-base h-full" value="financeiro">Financeiro</TabsTrigger>
+                <TabsTrigger className="flex-1 whitespace-nowrap text-base h-full" value="status">Status</TabsTrigger>
               </TabsList>
               
-              <div className="flex flex-col md:flex-row gap-6">
+              <div className="flex flex-col lg:flex-row gap-10 flex-1">
                 {/* Coluna da Imagem */}
-                <div className="w-full md:w-[240px] shrink-0">
-                  <div className="w-full h-[160px] md:h-auto md:aspect-square bg-muted/50 rounded-xl flex items-center justify-center border border-muted-foreground/10">
-                    <span className="text-muted-foreground/50 text-sm">Sem foto</span>
+                <div className="w-full lg:w-[320px] shrink-0">
+                  <div className="w-full h-[200px] lg:h-auto lg:aspect-square bg-muted/50 rounded-2xl flex items-center justify-center border border-muted-foreground/10 shadow-sm">
+                    <span className="text-muted-foreground/50 text-base">Sem foto</span>
                   </div>
                 </div>
 
                 {/* Coluna do Formulário */}
-                <div className="flex-1 min-w-0">
-                  <TabsContent value="dados" className="mt-0 space-y-4">
+                <div className="flex-1 min-w-0 flex flex-col">
+                  <TabsContent value="dados" className="mt-0 space-y-6 flex-1">
                     <FormField
                       control={form.control}
                       name="nome"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nome Completo *</FormLabel>
+                          <FormLabel className="text-base">Nome Completo *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Nome da paciente" {...field} />
+                            <Input placeholder="Nome da paciente" className="h-12 text-base" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormField
                         control={form.control}
                         name="telefone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Telefone</FormLabel>
+                            <FormLabel className="text-base">Telefone</FormLabel>
                             <FormControl>
                               <IMaskInput
                                 mask="(00) 00000-0000"
                                 placeholder="(00) 00000-0000"
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                 value={field.value}
                                 unmask={false}
                                 onAccept={(val) => field.onChange(val)}
@@ -210,9 +210,9 @@ export default function PacienteFormModal({
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>E-mail</FormLabel>
+                            <FormLabel className="text-base">E-mail</FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="E-mail" {...field} />
+                              <Input type="email" placeholder="E-mail" className="h-12 text-base" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -224,29 +224,29 @@ export default function PacienteFormModal({
                       name="observacoes"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Observações</FormLabel>
+                          <FormLabel className="text-base">Observações</FormLabel>
                           <FormControl>
-                            <Textarea placeholder="Anotações sobre a paciente..." className="resize-none min-h-[100px]" {...field} />
+                            <Textarea placeholder="Anotações sobre a paciente..." className="resize-none min-h-[140px] text-base" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="flex justify-end pt-2">
-                      <Button type="button" onClick={() => setActiveTab('sessoes')}>Próximo</Button>
+                    <div className="flex justify-end pt-6 mt-auto">
+                      <Button type="button" size="lg" className="px-8 text-base" onClick={() => setActiveTab('sessoes')}>Próximo</Button>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="sessoes" className="mt-0 space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <TabsContent value="sessoes" className="mt-0 space-y-6 flex-1">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormField
                         control={form.control}
                         name="sessoes_contratadas"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Sessões Contratadas *</FormLabel>
+                            <FormLabel className="text-base">Sessões Contratadas *</FormLabel>
                             <FormControl>
-                              <Input type="number" {...field} />
+                              <Input type="number" className="h-12 text-base" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -257,33 +257,33 @@ export default function PacienteFormModal({
                         name="sessoes_realizadas"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Sessões já realizadas</FormLabel>
+                            <FormLabel className="text-base">Sessões já realizadas</FormLabel>
                             <FormControl>
-                              <Input type="number" {...field} />
+                              <Input type="number" className="h-12 text-base" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormField
                         control={form.control}
                         name="cadencia"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Cadência</FormLabel>
+                            <FormLabel className="text-base">Cadência</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="h-12 text-base">
                                   <SelectValue placeholder="Selecione" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="semanal">Semanal</SelectItem>
-                                <SelectItem value="quinzenal">Quinzenal</SelectItem>
-                                <SelectItem value="mensal">Mensal</SelectItem>
-                                <SelectItem value="personalizado">Personalizado</SelectItem>
+                                <SelectItem value="semanal" className="text-base">Semanal</SelectItem>
+                                <SelectItem value="quinzenal" className="text-base">Quinzenal</SelectItem>
+                                <SelectItem value="mensal" className="text-base">Mensal</SelectItem>
+                                <SelectItem value="personalizado" className="text-base">Personalizado</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -296,9 +296,9 @@ export default function PacienteFormModal({
                           name="cadencia_dias_intervalo"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Intervalo em dias</FormLabel>
+                              <FormLabel className="text-base">Intervalo em dias</FormLabel>
                               <FormControl>
-                                <Input type="number" {...field} />
+                                <Input type="number" className="h-12 text-base" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -306,27 +306,27 @@ export default function PacienteFormModal({
                         />
                       )}
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormField
                         control={form.control}
                         name="dia_semana"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Dia da semana preferencial</FormLabel>
+                            <FormLabel className="text-base">Dia da semana preferencial</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="h-12 text-base">
                                   <SelectValue placeholder="Selecione" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="segunda">Segunda</SelectItem>
-                                <SelectItem value="terca">Terça</SelectItem>
-                                <SelectItem value="quarta">Quarta</SelectItem>
-                                <SelectItem value="quinta">Quinta</SelectItem>
-                                <SelectItem value="sexta">Sexta</SelectItem>
-                                <SelectItem value="sabado">Sábado</SelectItem>
-                                <SelectItem value="domingo">Domingo</SelectItem>
+                                <SelectItem value="segunda" className="text-base">Segunda</SelectItem>
+                                <SelectItem value="terca" className="text-base">Terça</SelectItem>
+                                <SelectItem value="quarta" className="text-base">Quarta</SelectItem>
+                                <SelectItem value="quinta" className="text-base">Quinta</SelectItem>
+                                <SelectItem value="sexta" className="text-base">Sexta</SelectItem>
+                                <SelectItem value="sabado" className="text-base">Sábado</SelectItem>
+                                <SelectItem value="domingo" className="text-base">Domingo</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -338,28 +338,28 @@ export default function PacienteFormModal({
                         name="horario"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Horário Fixo</FormLabel>
+                            <FormLabel className="text-base">Horário Fixo</FormLabel>
                             <FormControl>
-                              <Input type="time" {...field} />
+                              <Input type="time" className="h-12 text-base" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
-                    <div className="flex justify-between pt-2">
-                      <Button type="button" variant="outline" onClick={() => setActiveTab('dados')}>Anterior</Button>
-                      <Button type="button" onClick={() => setActiveTab('financeiro')}>Próximo</Button>
+                    <div className="flex justify-between pt-6 mt-auto">
+                      <Button type="button" variant="outline" size="lg" className="px-8 text-base" onClick={() => setActiveTab('dados')}>Anterior</Button>
+                      <Button type="button" size="lg" className="px-8 text-base" onClick={() => setActiveTab('financeiro')}>Próximo</Button>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="financeiro" className="mt-0 space-y-4">
+                  <TabsContent value="financeiro" className="mt-0 space-y-6 flex-1">
                     <FormField
                       control={form.control}
                       name="valor"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Valor do Pacote (R$) *</FormLabel>
+                          <FormLabel className="text-base">Valor do Pacote (R$) *</FormLabel>
                           <FormControl>
                             <NumericFormat
                               value={field.value}
@@ -369,32 +369,32 @@ export default function PacienteFormModal({
                               prefix="R$ "
                               decimalScale={2}
                               fixedDecimalScale
-                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                              className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormField
                         control={form.control}
                         name="forma_pagamento"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Forma de Pagamento</FormLabel>
+                            <FormLabel className="text-base">Forma de Pagamento</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="h-12 text-base">
                                   <SelectValue placeholder="Selecione" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="pix">Pix</SelectItem>
-                                <SelectItem value="cartao">Cartão</SelectItem>
-                                <SelectItem value="dinheiro">Dinheiro</SelectItem>
-                                <SelectItem value="transferencia">Transferência</SelectItem>
-                                <SelectItem value="outro">Outro</SelectItem>
+                                <SelectItem value="pix" className="text-base">Pix</SelectItem>
+                                <SelectItem value="cartao" className="text-base">Cartão</SelectItem>
+                                <SelectItem value="dinheiro" className="text-base">Dinheiro</SelectItem>
+                                <SelectItem value="transferencia" className="text-base">Transferência</SelectItem>
+                                <SelectItem value="outro" className="text-base">Outro</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -406,17 +406,17 @@ export default function PacienteFormModal({
                         name="status_financeiro"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Status Financeiro</FormLabel>
+                            <FormLabel className="text-base">Status Financeiro</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="h-12 text-base">
                                   <SelectValue placeholder="Selecione" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="pago">Pago</SelectItem>
-                                <SelectItem value="pendente">Pendente</SelectItem>
-                                <SelectItem value="atrasado">Atrasado</SelectItem>
+                                <SelectItem value="pago" className="text-base">Pago</SelectItem>
+                                <SelectItem value="pendente" className="text-base">Pendente</SelectItem>
+                                <SelectItem value="atrasado" className="text-base">Atrasado</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -429,62 +429,64 @@ export default function PacienteFormModal({
                       name="data_pagamento"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Data do Pagamento</FormLabel>
+                          <FormLabel className="text-base">Data do Pagamento</FormLabel>
                           <FormControl>
-                            <Input type="date" {...field} />
+                            <Input type="date" className="h-12 text-base" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="flex justify-between pt-2">
-                      <Button type="button" variant="outline" onClick={() => setActiveTab('sessoes')}>Anterior</Button>
-                      <Button type="button" onClick={() => setActiveTab('status')}>Próximo</Button>
+                    <div className="flex justify-between pt-6 mt-auto">
+                      <Button type="button" variant="outline" size="lg" className="px-8 text-base" onClick={() => setActiveTab('sessoes')}>Anterior</Button>
+                      <Button type="button" size="lg" className="px-8 text-base" onClick={() => setActiveTab('status')}>Próximo</Button>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="status" className="mt-0 space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Status da Paciente</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="ativa">Ativa</SelectItem>
-                              <SelectItem value="pausada">Pausada</SelectItem>
-                              <SelectItem value="encerrada">Encerrada</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    {form.watch('status') === 'pausada' && (
+                  <TabsContent value="status" className="mt-0 space-y-6 flex-1 flex flex-col">
+                    <div className="space-y-6 flex-1">
                       <FormField
                         control={form.control}
-                        name="motivo_pausa"
+                        name="status"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Motivo da Pausa</FormLabel>
-                            <FormControl>
-                              <Textarea placeholder="Qual o motivo?" {...field} />
-                            </FormControl>
+                            <FormLabel className="text-base">Status da Paciente</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="h-12 text-base">
+                                  <SelectValue placeholder="Selecione" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="ativa" className="text-base">Ativa</SelectItem>
+                                <SelectItem value="pausada" className="text-base">Pausada</SelectItem>
+                                <SelectItem value="encerrada" className="text-base">Encerrada</SelectItem>
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                    )}
-                    <div className="flex justify-between pt-4 mt-8 border-t">
-                      <Button type="button" variant="outline" onClick={() => setActiveTab('financeiro')}>Anterior</Button>
-                      <Button type="submit" disabled={isLoading}>
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {form.watch('status') === 'pausada' && (
+                        <FormField
+                          control={form.control}
+                          name="motivo_pausa"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base">Motivo da Pausa</FormLabel>
+                              <FormControl>
+                                <Textarea placeholder="Qual o motivo?" className="h-32 text-base resize-none" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </div>
+                    <div className="flex justify-between pt-6 mt-auto border-t">
+                      <Button type="button" variant="outline" size="lg" className="px-8 text-base" onClick={() => setActiveTab('financeiro')}>Anterior</Button>
+                      <Button type="submit" size="lg" className="px-8 text-base" disabled={isLoading}>
+                        {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
                         Salvar Paciente
                       </Button>
                     </div>
