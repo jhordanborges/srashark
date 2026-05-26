@@ -31,7 +31,7 @@ export async function validateInboundAuth(req: Request) {
   return { valid: false, error: 'unauthorized', message: 'API key inválida ou integração inativa' }
 }
 
-export async function logInbound(endpoint: string, method: string, body: any, response: any, statusCode: number, errorMsg?: string, patientId?: string) {
+export async function logInbound(endpoint: string, method: string, body: any, response: any, statusCode: number, errorMsg?: string | null, patientId?: string | null) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
   const supabaseAdmin = createClient(supabaseUrl, supabaseKey)

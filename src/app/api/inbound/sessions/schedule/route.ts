@@ -49,7 +49,7 @@ export async function POST(req: Request) {
   const hojeStr = new Date().toISOString().split('T')[0]
   if (data === hojeStr) {
     await supabase.from('alerts').insert({
-      paciente_id,
+      patient_id,
       tipo: 'sessao_hoje',
       titulo: 'Sessão Hoje',
       mensagem: `Sessão extra com ${patient.nome} às ${horario} hoje`,

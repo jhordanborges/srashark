@@ -169,7 +169,7 @@ export default function RelatoriosClient() {
           <p className="text-muted-foreground">Métricas de performance clínica e financeira.</p>
         </div>
         <div className="flex gap-4 items-center">
-          <Select value={mesAtual} onValueChange={setMesAtual}>
+          <Select value={mesAtual} onValueChange={(val) => setMesAtual(val || new Date().getMonth().toString())}>
             <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               {['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'].map((m, i) => (
@@ -177,7 +177,7 @@ export default function RelatoriosClient() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={anoAtual} onValueChange={setAnoAtual}>
+          <Select value={anoAtual} onValueChange={(val) => setAnoAtual(val || new Date().getFullYear().toString())}>
             <SelectTrigger className="w-[100px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               {[2024, 2025, 2026, 2027].map((a) => <SelectItem key={a} value={a.toString()}>{a}</SelectItem>)}

@@ -32,7 +32,7 @@ export default function NovaSessaoModal({
   const supabase = createClient()
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       patient_id: preselectedPatientId || '',
       data: new Date().toISOString().split('T')[0],

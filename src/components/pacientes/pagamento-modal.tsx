@@ -31,7 +31,7 @@ export default function PagamentoModal({
   const supabase = createClient()
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       valor: 0,
       forma_pagamento: 'pix',

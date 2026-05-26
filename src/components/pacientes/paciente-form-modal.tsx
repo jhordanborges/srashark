@@ -67,7 +67,7 @@ export default function PacienteFormModal({
   const supabase = createClient()
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       nome: '',
       telefone: '',
