@@ -160,7 +160,14 @@ export default function PacienteFormModal({
 
         if (patientError) throw patientError
 
-        toast.success('Paciente atualizada com sucesso!')
+        // Re-sync sessions in case cadence or session count changed
+        await fetch('/api/agenda/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ startDate: new Date().toISOString().split('T')[0] })
+        })
+
+        toast.success('Paciente atualizada com sucesso! Agenda sincronizada.')
         dispatchInternalWebhook('patient.updated', { patient: { id: patient.id, ...values } })
       } else {
         // Validate valor before inserting
@@ -204,7 +211,14 @@ export default function PacienteFormModal({
 
         if (paymentError) throw paymentError
 
-        toast.success('Paciente cadastrada com sucesso!')
+        // Auto-generate all contracted sessions for the new patient
+        await fetch('/api/agenda/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ startDate: new Date().toISOString().split('T')[0] })
+        })
+
+        toast.success('Paciente cadastrada com sucesso! Sessões agendadas automaticamente.')
         dispatchInternalWebhook('patient.created', { patient: newPatient })
       }
       
