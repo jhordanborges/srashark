@@ -162,13 +162,14 @@ export default function RelatoriosClient() {
   }
 
   return (
-    <div className="flex-1 space-y-6 p-8 pt-6">
-      <div className="flex items-center justify-between">
+    <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Relatórios Gerenciais</h2>
           <p className="text-muted-foreground">Métricas de performance clínica e financeira.</p>
         </div>
-        <div className="flex gap-4 items-center">
+        <div className="flex flex-wrap gap-3 items-center">
           <Select value={mesAtual} onValueChange={(val) => setMesAtual(val || new Date().getMonth().toString())}>
             <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -187,15 +188,17 @@ export default function RelatoriosClient() {
         </div>
       </div>
 
+      {/* Tabs */}
       <Tabs defaultValue="mensal" className="w-full">
-        <TabsList className="flex w-full overflow-x-auto h-14 p-1.5 bg-muted rounded-lg no-scrollbar mb-4">
+        <TabsList className="flex w-full overflow-x-auto h-14 p-1.5 bg-muted rounded-lg no-scrollbar mb-6">
           <TabsTrigger value="mensal" className="flex-1 whitespace-nowrap text-base h-full">Relatório Mensal</TabsTrigger>
           <TabsTrigger value="pacientes" className="flex-1 whitespace-nowrap text-base h-full">Saúde dos Pacientes</TabsTrigger>
           <TabsTrigger value="graficos" className="flex-1 whitespace-nowrap text-base h-full">Gráficos Consolidados</TabsTrigger>
         </TabsList>
 
         <TabsContent value="mensal" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {/* KPI Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Realizadas</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{stats.mensal.realizadas}</p></CardContent></Card>
             <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Faltou</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{stats.mensal.faltou}</p></CardContent></Card>
             <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Taxa Presença</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold text-green-600">{stats.mensal.taxa}%</p></CardContent></Card>
@@ -238,7 +241,7 @@ export default function RelatoriosClient() {
         </TabsContent>
 
         <TabsContent value="pacientes" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Ativas</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold text-green-600">{stats.pacientes.ativas}</p></CardContent></Card>
             <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Pausadas</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold text-yellow-500">{stats.pacientes.pausadas}</p></CardContent></Card>
             <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Encerradas</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold text-gray-500">{stats.pacientes.encerradas}</p></CardContent></Card>

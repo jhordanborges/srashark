@@ -175,7 +175,7 @@ export default function FinanceiroClient({ initialPayments, activePatients }: { 
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap justify-end gap-2">
          <Button variant="outline" onClick={exportCSV}><Download className="w-4 h-4 mr-2" /> Exportar CSV</Button>
          <Button variant="outline" onClick={exportPDF}><Download className="w-4 h-4 mr-2" /> Exportar PDF</Button>
       </div>
@@ -188,7 +188,7 @@ export default function FinanceiroClient({ initialPayments, activePatients }: { 
         </TabsList>
         
         <TabsContent value="resumo" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 grid-cols-2 md:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Receita (Mês Atual)</CardTitle>
